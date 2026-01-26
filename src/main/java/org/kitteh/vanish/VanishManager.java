@@ -227,7 +227,7 @@ public final class VanishManager {
     this.toggleVanishQuiet(togglingPlayer);
     final String vanishingPlayerName = togglingPlayer.getName();
     final Component messageBit;
-    final Component base = Component.text(vanishingPlayerName + " has ", NamedTextColor.YELLOW);
+    final Component base = Component.text(vanishingPlayerName + " has ", NamedTextColor.DARK_AQUA);
     if (this.isVanished(togglingPlayer)) {
       Debuggle.log("LoudVanishToggle Vanishing " + togglingPlayer.getName());
       this.plugin.hooksVanish(togglingPlayer);
