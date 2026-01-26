@@ -18,11 +18,17 @@
 package org.kitteh.vanish;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -256,7 +262,36 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
     this.getServer().getPluginManager().registerEvents(new ListenInventory(this), this);
     this.getServer().getPluginManager().registerEvents(new ListenServerPing(this.manager), this);
 
+    this.getServer().getGlobalRegionScheduler().runDelayed(this, task -> forceOverrideCommandAliases(), 1L);
+
     this.getLogger().info(this.getCurrentVersion() + " loaded.");
+  }
+
+  @SuppressWarnings("unchecked")
+  private void forceOverrideCommandAliases() {
+    try {
+      Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+      commandMapField.setAccessible(true);
+      CommandMap commandMap = (CommandMap) commandMapField.get(Bukkit.getServer());
+
+      Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+      knownCommandsField.setAccessible(true);
+      Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);
+
+      Command vanishCommand = knownCommands.get("vanishnopacket:vanish");
+      if (vanishCommand == null) {
+        vanishCommand = knownCommands.get("vanish");
+      }
+
+      if (vanishCommand != null) {
+        knownCommands.put("v", vanishCommand);
+        knownCommands.put("vnp", vanishCommand);
+      } else {
+        this.getLogger().warning("Could not find vanish command to override aliases.");
+      }
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      this.getLogger().warning("Failed to override command aliases: " + e.getMessage());
+    }
   }
 
   @EventHandler
