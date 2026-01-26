@@ -1,5 +1,6 @@
 import io.papermc.hangarpublishplugin.HangarPublishTask
 import io.papermc.hangarpublishplugin.model.Platforms
+import xyz.jpenilla.resourcefactory.bukkit.bukkitPluginYaml
 import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 
 plugins {
@@ -38,7 +39,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
-    implementation("net.essentialsx:EssentialsX:2.21.1") {
+    compileOnly("net.essentialsx:EssentialsX:2.21.1") {
         exclude("org.spigotmc")
     }
     compileOnly("com.github.milkbowl:vaultapi:1.7") {
@@ -48,7 +49,7 @@ dependencies {
     compileOnly("net.luckperms:api:5.5")
     testImplementation("net.luckperms:api:5.5")
 
-    implementation("me.clip:placeholderapi:2.11.6") {
+    compileOnly("me.clip:placeholderapi:2.11.6") {
         exclude("me.clip.placeholderapi.libs.kyori")
         exclude("net.kyori")
     }
