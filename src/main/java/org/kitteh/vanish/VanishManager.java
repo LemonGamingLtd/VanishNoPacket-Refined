@@ -236,6 +236,7 @@ public final class VanishManager {
       this.hideVanished(player);
       Debuggle.log("Hiding all to " + player.getName());
     }
+    this.hideAdminVanishedFrom(player);
   }
 
   /**
@@ -472,8 +473,15 @@ public final class VanishManager {
 
   private void hideVanished(@NonNull Player player) {
     for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
-      if (!player.equals(otherPlayer) && this.isVanished(otherPlayer) && player.canSee(
-          otherPlayer)) {
+      if (!player.equals(otherPlayer) && this.isVanished(otherPlayer)) {
+        player.hidePlayer(this.plugin, otherPlayer);
+      }
+    }
+  }
+
+  private void hideAdminVanishedFrom(@NonNull Player player) {
+    for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
+      if (!player.equals(otherPlayer) && this.isAdminVanished(otherPlayer)) {
         player.hidePlayer(this.plugin, otherPlayer);
       }
     }
@@ -533,7 +541,7 @@ public final class VanishManager {
 
   private void showVanished(@NonNull Player player) {
     for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
-      if (this.isVanished(otherPlayer) && !player.canSee(otherPlayer)) {
+      if (this.isVanished(otherPlayer) && !this.isAdminVanished(otherPlayer) && !player.canSee(otherPlayer)) {
         this.showPlayer.add(new ShowPlayerEntry(player, otherPlayer));
       }
     }
