@@ -178,4 +178,12 @@ public final class VanishUser {
         this.silentChestReads = !this.silentChestReads;
         return this.silentChestReads;
     }
+
+    public void setNoInteract(boolean noInteract) {
+        this.noInteract = noInteract;
+    }
+
+    public void setNoChat(boolean noChat) {
+        this.noChat = noChat;
+    }
 }

@@ -188,9 +188,26 @@ public final class VanishCommand {
                 }
                 return VanishPerms.canFakeAnnounce((Player) executor);
               }).executes(ctx -> fakeJoin(ctx, false))
-              .then(Commands.literal("force").executes(ctx -> fakeJoin(ctx, true))));
+              .then(Commands.literal("force").executes(ctx -> fakeJoin(ctx, true))))
+          .then(Commands.literal("soft").requires(predicate -> {
+            final Entity executor = predicate.getExecutor();
+            if (!(executor instanceof Player)) {
+              return false;
+            }
+            return VanishPerms.canSoftVanish((Player) executor);
+          }).executes(ctx -> softVanish(ctx)));
+
+      final LiteralArgumentBuilder<CommandSourceStack> softCommand = Commands.literal("softvanish")
+          .requires(predicate -> {
+            final Entity executor = predicate.getExecutor();
+            if (!(executor instanceof Player)) {
+              return false;
+            }
+            return VanishPerms.canSoftVanish((Player) executor);
+          }).executes(ctx -> softVanish(ctx));
 
       commands.register(command.build(), "Vanish", List.of(new String[]{"v", "vnp"}));
+      commands.register(softCommand.build(), "Soft Vanish", List.of(new String[]{"sv"}));
     });
   }
 
@@ -219,6 +236,21 @@ public final class VanishCommand {
           .deserialize(alreadyStateMessage, Placeholder.unparsed("status", "")));
     }
     this.plugin.getManager().getAnnounceManipulator().fakeJoin(player, force);
+    return SINGLE_SUCCESS;
+  }
+
+  @SuppressWarnings("UnstableApiUsage")
+  private int softVanish(CommandContext<CommandSourceStack> ctx) {
+    Player player = (Player) ctx.getSource().getExecutor();
+    assert player != null;
+
+    if (this.plugin.getManager().isVanished(player)) {
+      this.plugin.getManager().toggleVanish(player);
+    } else {
+      this.plugin.getManager().toggleVanish(player);
+      VanishPerms.applySoftVanishSettings(player);
+      player.sendMessage(Component.text("[Vanish] Soft mode enabled", NamedTextColor.DARK_AQUA));
+    }
     return SINGLE_SUCCESS;
   }
 }

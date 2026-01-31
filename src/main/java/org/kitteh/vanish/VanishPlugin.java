@@ -286,8 +286,15 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
       if (vanishCommand != null) {
         knownCommands.put("v", vanishCommand);
         knownCommands.put("vnp", vanishCommand);
-      } else {
-        this.getLogger().warning("Could not find vanish command to override aliases.");
+      }
+
+      Command softVanishCommand = knownCommands.get("vanishnopacket:softvanish");
+      if (softVanishCommand == null) {
+        softVanishCommand = knownCommands.get("softvanish");
+      }
+
+      if (softVanishCommand != null) {
+        knownCommands.put("sv", softVanishCommand);
       }
     } catch (NoSuchFieldException | IllegalAccessException e) {
       this.getLogger().warning("Failed to override command aliases: " + e.getMessage());

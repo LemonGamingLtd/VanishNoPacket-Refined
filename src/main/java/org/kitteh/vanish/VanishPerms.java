@@ -319,6 +319,16 @@ public final class VanishPerms {
     VanishPerms.users.remove(player.getName());
   }
 
+  public static boolean canSoftVanish(@NonNull Player player) {
+    return player.hasPermission("vanish.soft");
+  }
+
+  public static void applySoftVanishSettings(@NonNull Player player) {
+    VanishUser user = getUser(player);
+    user.setNoInteract(false);
+    user.setNoChat(false);
+  }
+
   private static VanishUser getUser(@NonNull Player player) {
     VanishUser user = VanishPerms.users.get(player.getName());
     if (user == null) {
