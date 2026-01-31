@@ -323,10 +323,20 @@ public final class VanishPerms {
     return player.hasPermission("vanish.soft");
   }
 
-  public static void applySoftVanishSettings(@NonNull Player player) {
-    VanishUser user = getUser(player);
-    user.setNoInteract(false);
-    user.setNoChat(false);
+  public static void enableSoftMode(@NonNull Player player) {
+    getUser(player).enableSoftMode();
+  }
+
+  public static void disableSoftMode(@NonNull Player player) {
+    getUser(player).disableSoftMode();
+  }
+
+  public static boolean toggleSoftMode(@NonNull Player player) {
+    return getUser(player).toggleSoftMode();
+  }
+
+  public static boolean isSoftMode(@NonNull Player player) {
+    return getUser(player).isSoftMode();
   }
 
   private static VanishUser getUser(@NonNull Player player) {

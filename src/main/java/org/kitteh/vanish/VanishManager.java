@@ -287,6 +287,7 @@ public final class VanishManager {
       Debuggle.log("It's visible time! " + vanishingPlayer.getName());
       this.resetSleepingIgnored(vanishingPlayer);
       this.removeVanished(vanishingPlayerName);
+      VanishPerms.disableSoftMode(vanishingPlayer);
       byte coll = vanishingPlayer.getPersistentDataContainer()
           .getOrDefault(this.vanishCollideState, PersistentDataType.BYTE, (byte) 0x00);
       if (coll == 0x01) {

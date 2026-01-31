@@ -245,11 +245,16 @@ public final class VanishCommand {
     assert player != null;
 
     if (this.plugin.getManager().isVanished(player)) {
-      this.plugin.getManager().toggleVanish(player);
+      boolean softModeEnabled = VanishPerms.toggleSoftMode(player);
+      if (softModeEnabled) {
+        player.sendMessage(Component.text("Soft mode enabled", NamedTextColor.DARK_AQUA));
+      } else {
+        player.sendMessage(Component.text("Soft mode disabled", NamedTextColor.DARK_AQUA));
+      }
     } else {
       this.plugin.getManager().toggleVanish(player);
-      VanishPerms.applySoftVanishSettings(player);
-      player.sendMessage(Component.text("[Vanish] Soft mode enabled", NamedTextColor.DARK_AQUA));
+      VanishPerms.enableSoftMode(player);
+      player.sendMessage(Component.text("Soft mode enabled", NamedTextColor.DARK_AQUA));
     }
     return SINGLE_SUCCESS;
   }

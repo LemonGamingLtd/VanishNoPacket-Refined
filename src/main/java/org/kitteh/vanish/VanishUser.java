@@ -35,6 +35,9 @@ public final class VanishUser {
     private boolean explode;
     private boolean lightning;
     private boolean bats;
+    private boolean softMode;
+    private boolean originalNoInteract;
+    private boolean originalNoChat;
 
     public VanishUser(@NonNull Player player) {
         this.seeAll = player.hasPermission("vanish.see");
@@ -185,5 +188,36 @@ public final class VanishUser {
 
     public void setNoChat(boolean noChat) {
         this.noChat = noChat;
+    }
+
+    public boolean isSoftMode() {
+        return this.softMode;
+    }
+
+    public void enableSoftMode() {
+        if (!this.softMode) {
+            this.originalNoInteract = this.noInteract;
+            this.originalNoChat = this.noChat;
+            this.noInteract = false;
+            this.noChat = false;
+            this.softMode = true;
+        }
+    }
+
+    public void disableSoftMode() {
+        if (this.softMode) {
+            this.noInteract = this.originalNoInteract;
+            this.noChat = this.originalNoChat;
+            this.softMode = false;
+        }
+    }
+
+    public boolean toggleSoftMode() {
+        if (this.softMode) {
+            disableSoftMode();
+        } else {
+            enableSoftMode();
+        }
+        return this.softMode;
     }
 }
