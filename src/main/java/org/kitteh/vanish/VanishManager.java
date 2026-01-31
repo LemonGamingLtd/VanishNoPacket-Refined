@@ -522,6 +522,9 @@ public final class VanishManager {
       for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
         if (!player.equals(otherPlayer)) {
           otherPlayer.hidePlayer(this.plugin, player);
+          if (this.isAdminVanished(otherPlayer)) {
+            player.hidePlayer(this.plugin, otherPlayer);
+          }
         }
       }
 
@@ -530,6 +533,9 @@ public final class VanishManager {
           for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
             if (!player.equals(otherPlayer)) {
               otherPlayer.hidePlayer(this.plugin, player);
+              if (this.isAdminVanished(otherPlayer)) {
+                player.hidePlayer(this.plugin, otherPlayer);
+              }
             }
           }
         }
