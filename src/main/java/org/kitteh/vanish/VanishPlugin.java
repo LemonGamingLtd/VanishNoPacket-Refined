@@ -250,6 +250,8 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
     for (final Player player : this.getServer().getOnlinePlayers()) {
       player.setMetadata("vanished", new LazyMetadataValue(this, CacheStrategy.NEVER_CACHE,
           new VanishCheck(this.manager, player.getName())));
+      player.setMetadata("adminvanished", new LazyMetadataValue(this, CacheStrategy.NEVER_CACHE,
+          new AdminVanishCheck(this.manager, player.getName())));
     }
 
     new VanishCommand(this);
@@ -296,6 +298,15 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
       if (softVanishCommand != null) {
         knownCommands.put("sv", softVanishCommand);
       }
+
+      Command adminVanishCommand = knownCommands.get("vanishnopacket:adminvanish");
+      if (adminVanishCommand == null) {
+        adminVanishCommand = knownCommands.get("adminvanish");
+      }
+
+      if (adminVanishCommand != null) {
+        knownCommands.put("av", adminVanishCommand);
+      }
     } catch (NoSuchFieldException | IllegalAccessException e) {
       this.getLogger().warning("Failed to override command aliases: " + e.getMessage());
     }
@@ -311,11 +322,12 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
   }
 
   /**
-   * Reloads the VNP config.
+   * Reloads the VNP config and refreshes all user permissions.
    */
   public void reload() {
     this.reloadConfig();
     Settings.freshStart(this);
+    VanishPerms.refreshAllUsers();
   }
 
   /**

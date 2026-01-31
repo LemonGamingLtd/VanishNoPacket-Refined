@@ -319,8 +319,20 @@ public final class VanishPerms {
     VanishPerms.users.remove(player.getName());
   }
 
+  public static void refreshUser(@NonNull Player player) {
+    VanishPerms.users.remove(player.getName());
+  }
+
+  public static void refreshAllUsers() {
+    VanishPerms.users.clear();
+  }
+
   public static boolean canSoftVanish(@NonNull Player player) {
     return player.hasPermission("vanish.soft");
+  }
+
+  public static boolean canAdminVanish(@NonNull Player player) {
+    return player.hasPermission("vanish.admin");
   }
 
   public static void enableSoftMode(@NonNull Player player) {

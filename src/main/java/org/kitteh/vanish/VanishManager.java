@@ -93,6 +93,7 @@ public final class VanishManager {
 
   private final VanishPlugin plugin;
   private final Set<String> vanishedPlayerNames = Collections.synchronizedSet(new HashSet<>());
+  private final Set<String> adminVanishedPlayerNames = Collections.synchronizedSet(new HashSet<>());
   private final Map<String, Boolean> sleepIgnored = new HashMap<>();
   private final Set<UUID> bats = new HashSet<>();
   private final VanishAnnounceManipulator announceManipulator;
@@ -166,6 +167,26 @@ public final class VanishManager {
     }
     Debuggle.log("Testing vanished status of " + playerName + ": null");
     return false;
+  }
+
+  /**
+   * Gets if a player is admin vanished
+   *
+   * @param player player to query
+   * @return true if admin vanished
+   */
+  public boolean isAdminVanished(@NonNull Player player) {
+    return this.adminVanishedPlayerNames.contains(player.getName());
+  }
+
+  /**
+   * Gets if a player is admin vanished by name
+   *
+   * @param playerName name of the player to query
+   * @return true if admin vanished
+   */
+  public boolean isAdminVanished(@NonNull String playerName) {
+    return this.adminVanishedPlayerNames.contains(playerName);
   }
 
   /**
@@ -326,7 +347,7 @@ public final class VanishManager {
       Debuggle.log("Determining what to do about " + vanishingPlayer.getName() + " for "
           + otherPlayer.getName());
       if (vanishing) {
-        if (!VanishPerms.canSeeAll(otherPlayer)) {
+        if (this.isAdminVanished(vanishingPlayer) || !VanishPerms.canSeeAll(otherPlayer)) {
           if (otherPlayer.canSee(vanishingPlayer)) {
             Debuggle.log("Hiding " + vanishingPlayer.getName() + " from " + otherPlayer.getName());
             otherPlayer.hidePlayer(this.plugin, vanishingPlayer);
@@ -460,6 +481,43 @@ public final class VanishManager {
 
   private void removeVanished(@NonNull String name) {
     this.vanishedPlayerNames.remove(name);
+    this.adminVanishedPlayerNames.remove(name);
+  }
+
+  /**
+   * Toggles admin vanish for a player.
+   *
+   * @param player the player to toggle admin vanish for
+   * @return true if now admin vanished, false if no longer admin vanished
+   */
+  public boolean toggleAdminVanish(@NonNull Player player) {
+    final String playerName = player.getName();
+
+    if (this.adminVanishedPlayerNames.contains(playerName)) {
+      this.adminVanishedPlayerNames.remove(playerName);
+
+      if (this.isVanished(player)) {
+        for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
+          if (!player.equals(otherPlayer) && VanishPerms.canSeeAll(otherPlayer)) {
+            otherPlayer.hidePlayer(this.plugin, player);
+            this.showPlayer.add(new ShowPlayerEntry(otherPlayer, player));
+          }
+        }
+      }
+      return false;
+    } else {
+      if (!this.isVanished(player)) {
+        this.toggleVanishQuiet(player, false);
+      }
+      this.adminVanishedPlayerNames.add(playerName);
+
+      for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
+        if (!player.equals(otherPlayer) && otherPlayer.canSee(player)) {
+          otherPlayer.hidePlayer(this.plugin, player);
+        }
+      }
+      return true;
+    }
   }
 
   private void showVanished(@NonNull Player player) {

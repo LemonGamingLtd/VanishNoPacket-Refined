@@ -195,7 +195,14 @@ public final class VanishCommand {
               return false;
             }
             return VanishPerms.canSoftVanish((Player) executor);
-          }).executes(ctx -> softVanish(ctx)));
+          }).executes(ctx -> softVanish(ctx)))
+          .then(Commands.literal("admin").requires(predicate -> {
+            final Entity executor = predicate.getExecutor();
+            if (!(executor instanceof Player)) {
+              return false;
+            }
+            return VanishPerms.canAdminVanish((Player) executor);
+          }).executes(ctx -> adminVanish(ctx)));
 
       final LiteralArgumentBuilder<CommandSourceStack> softCommand = Commands.literal("softvanish")
           .requires(predicate -> {
@@ -206,8 +213,18 @@ public final class VanishCommand {
             return VanishPerms.canSoftVanish((Player) executor);
           }).executes(ctx -> softVanish(ctx));
 
+      final LiteralArgumentBuilder<CommandSourceStack> adminCommand = Commands.literal("adminvanish")
+          .requires(predicate -> {
+            final Entity executor = predicate.getExecutor();
+            if (!(executor instanceof Player)) {
+              return false;
+            }
+            return VanishPerms.canAdminVanish((Player) executor);
+          }).executes(ctx -> adminVanish(ctx));
+
       commands.register(command.build(), "Vanish", List.of(new String[]{"v", "vnp"}));
       commands.register(softCommand.build(), "Soft Vanish", List.of(new String[]{"sv"}));
+      commands.register(adminCommand.build(), "Admin Vanish", List.of(new String[]{"av"}));
     });
   }
 
@@ -255,6 +272,20 @@ public final class VanishCommand {
       this.plugin.getManager().toggleVanish(player);
       VanishPerms.enableSoftMode(player);
       player.sendMessage(Component.text("Soft mode enabled", NamedTextColor.DARK_AQUA));
+    }
+    return SINGLE_SUCCESS;
+  }
+
+  @SuppressWarnings("UnstableApiUsage")
+  private int adminVanish(CommandContext<CommandSourceStack> ctx) {
+    Player player = (Player) ctx.getSource().getExecutor();
+    assert player != null;
+
+    boolean adminVanished = this.plugin.getManager().toggleAdminVanish(player);
+    if (adminVanished) {
+      player.sendMessage(Component.text("Admin vanish enabled", NamedTextColor.DARK_RED));
+    } else {
+      player.sendMessage(Component.text("Admin vanish disabled", NamedTextColor.DARK_AQUA));
     }
     return SINGLE_SUCCESS;
   }

@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.metadata.LazyMetadataValue;
 import org.bukkit.metadata.LazyMetadataValue.CacheStrategy;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.kitteh.vanish.AdminVanishCheck;
 import org.kitteh.vanish.VanishCheck;
 import org.kitteh.vanish.VanishPerms;
 import org.kitteh.vanish.VanishPlugin;
@@ -44,6 +45,9 @@ public final class ListenPlayerJoin implements Listener {
     event.getPlayer().setMetadata("vanished",
         new LazyMetadataValue(this.plugin, CacheStrategy.NEVER_CACHE,
             new VanishCheck(this.plugin.getManager(), event.getPlayer().getName())));
+    event.getPlayer().setMetadata("adminvanished",
+        new LazyMetadataValue(this.plugin, CacheStrategy.NEVER_CACHE,
+            new AdminVanishCheck(this.plugin.getManager(), event.getPlayer().getName())));
     this.plugin.getManager().resetSeeing(event.getPlayer());
     if (VanishPerms.joinVanished(event.getPlayer())) {
       this.plugin.getManager().toggleVanishQuiet(event.getPlayer(), false);
