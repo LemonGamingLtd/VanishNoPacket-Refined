@@ -150,7 +150,10 @@ public final class ListenPlayerOther implements Listener {
   @EventHandler
   public void onPlayerQuit(@NonNull PlayerQuitEvent event) {
     final Player player = event.getPlayer();
-    if (this.plugin.getManager().isVanished(player)) {
+    final boolean wasAdminVanished = this.plugin.getManager().isAdminVanished(player);
+    final boolean wasVanished = this.plugin.getManager().isVanished(player);
+
+    if (wasVanished && !wasAdminVanished) {
       this.plugin.messageStatusUpdate(
           Component.text(event.getPlayer().getName() + " has quit vanished",
               NamedTextColor.DARK_AQUA));
@@ -158,7 +161,8 @@ public final class ListenPlayerOther implements Listener {
     this.plugin.getManager().playerQuit(player);
     this.plugin.hooksQuit(player);
     this.plugin.getManager().getAnnounceManipulator().dropDelayedAnnounce(player.getName());
-    if (!this.plugin.getManager().getAnnounceManipulator().playerHasQuit(player.getName())
+    if (wasAdminVanished
+        || !this.plugin.getManager().getAnnounceManipulator().playerHasQuit(player.getName())
         || VanishPerms.silentQuit(player)) {
       event.quitMessage(null);
     }
