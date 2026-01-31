@@ -512,10 +512,21 @@ public final class VanishManager {
       this.adminVanishedPlayerNames.add(playerName);
 
       for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
-        if (!player.equals(otherPlayer) && otherPlayer.canSee(player)) {
+        if (!player.equals(otherPlayer)) {
           otherPlayer.hidePlayer(this.plugin, player);
         }
       }
+
+      this.plugin.getServer().getGlobalRegionScheduler().runDelayed(this.plugin, task -> {
+        if (player.isOnline() && this.adminVanishedPlayerNames.contains(player.getName())) {
+          for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
+            if (!player.equals(otherPlayer)) {
+              otherPlayer.hidePlayer(this.plugin, player);
+            }
+          }
+        }
+      }, 2L);
+
       return true;
     }
   }
