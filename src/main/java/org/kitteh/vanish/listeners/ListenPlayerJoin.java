@@ -49,7 +49,10 @@ public final class ListenPlayerJoin implements Listener {
         new LazyMetadataValue(this.plugin, CacheStrategy.NEVER_CACHE,
             new AdminVanishCheck(this.plugin.getManager(), event.getPlayer().getName())));
     this.plugin.getManager().resetSeeing(event.getPlayer());
-    if (VanishPerms.joinVanished(event.getPlayer())) {
+
+    if (VanishPerms.joinAdminVanished(event.getPlayer())) {
+      this.plugin.getManager().toggleAdminVanish(event.getPlayer());
+    } else if (VanishPerms.joinVanished(event.getPlayer())) {
       this.plugin.getManager().toggleVanishQuiet(event.getPlayer(), false);
       this.plugin.hooksVanish(event.getPlayer());
     }
@@ -59,6 +62,14 @@ public final class ListenPlayerJoin implements Listener {
   @SuppressWarnings("unused")
   @EventHandler(priority = EventPriority.MONITOR)
   public void onPlayerJoinLate(@NonNull PlayerJoinEvent event) {
+    if (VanishPerms.joinAdminVanished(event.getPlayer())) {
+      event.getPlayer().sendMessage(Component.text("You have joined in admin vanish mode.", NamedTextColor.DARK_RED));
+      this.plugin.getManager().getAnnounceManipulator()
+          .addToDelayedAnnounce(event.getPlayer().getName());
+      event.joinMessage(null);
+      return;
+    }
+
     final StringBuilder statusUpdate = new StringBuilder();
     if (VanishPerms.joinVanished(event.getPlayer())) {
       Component message = Component.text("You have joined vanished.", NamedTextColor.DARK_AQUA);

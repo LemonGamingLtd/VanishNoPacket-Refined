@@ -335,6 +335,10 @@ public final class VanishPerms {
     return player.hasPermission("vanish.admin");
   }
 
+  public static boolean joinAdminVanished(@NonNull Player player) {
+    return player.hasPermission("vanish.admin.onjoin");
+  }
+
   public static void enableSoftMode(@NonNull Player player) {
     getUser(player).enableSoftMode();
   }
