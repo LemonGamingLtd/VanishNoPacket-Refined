@@ -80,6 +80,9 @@ public final class VanishManager {
         final Player player = entry.getPlayer();
         final Player target = entry.getTarget();
         if (player.isOnline() && target.isOnline()) {
+          if (VanishManager.this.isAdminVanished(target)) {
+            continue;
+          }
           player.showPlayer(this.plugin, target);
         }
       }
@@ -514,10 +517,10 @@ public final class VanishManager {
       }
       return false;
     } else {
+      this.adminVanishedPlayerNames.add(playerName);
       if (!this.isVanished(player)) {
         this.toggleVanishQuiet(player, false);
       }
-      this.adminVanishedPlayerNames.add(playerName);
 
       for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
         if (!player.equals(otherPlayer)) {
