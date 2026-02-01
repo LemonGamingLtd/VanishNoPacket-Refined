@@ -63,11 +63,13 @@ public final class VanishManager {
   private static final class ShowPlayerHandler implements Runnable {
 
     private final VanishPlugin plugin;
+    private final VanishManager manager;
     private final Set<ShowPlayerEntry> entries = new HashSet<>();
     private final Set<ShowPlayerEntry> next = new HashSet<>();
 
-    private ShowPlayerHandler(VanishPlugin plugin) {
+    private ShowPlayerHandler(VanishPlugin plugin, VanishManager manager) {
       this.plugin = plugin;
+      this.manager = manager;
     }
 
     public void add(@NonNull ShowPlayerEntry player) {
@@ -80,7 +82,7 @@ public final class VanishManager {
         final Player player = entry.getPlayer();
         final Player target = entry.getTarget();
         if (player.isOnline() && target.isOnline()) {
-          if (VanishManager.this.isAdminVanished(target)) {
+          if (this.manager.isAdminVanished(target)) {
             continue;
           }
           player.showPlayer(this.plugin, target);
@@ -109,7 +111,7 @@ public final class VanishManager {
 
     this.announceManipulator = new VanishAnnounceManipulator(this.plugin);
 
-    this.showPlayer = new ShowPlayerHandler(this.plugin);
+    this.showPlayer = new ShowPlayerHandler(this.plugin, this);
 
     this.plugin.getServer().getGlobalRegionScheduler()
         .runAtFixedRate(this.plugin, (ignored) -> this.showPlayer.run(), 4, 4);
