@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
+import org.kitteh.vanish.compat.SchedulerAdapter;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -106,17 +108,17 @@ public final class ListenPlayerOther implements Listener {
       Inventory inventory;
       if (container.getInventory() instanceof DoubleChestInventory) {
         inventory = this.plugin.getServer()
-            .createInventory(player, 54, Component.text("Silently opened inventory"));
+            .createInventory(player, 54, "Silently opened inventory");
 
       } else {
         inventory = this.plugin.getServer()
             .createInventory(player, container.getInventory().getType(),
-                Component.text("Silently opened inventory"));
+                "Silently opened inventory");
 
       }
       inventory.setContents(container.getInventory().getContents());
       this.plugin.chestFakeOpen(player.getName());
-      player.sendMessage(Component.text( "[VNP] Opening chest silently. Can not edit.", NamedTextColor.AQUA));
+      this.plugin.sendMessage(player, Component.text("[VNP] Opening chest silently. Can not edit.", NamedTextColor.AQUA));
       player.openInventory(inventory);
       event.setCancelled(true);
     } else if (this.plugin.getManager().isVanished(player) && VanishPerms.canNotInteract(player)) {
@@ -164,7 +166,7 @@ public final class ListenPlayerOther implements Listener {
     if (wasAdminVanished
         || !this.plugin.getManager().getAnnounceManipulator().playerHasQuit(player.getName())
         || VanishPerms.silentQuit(player)) {
-      event.quitMessage(null);
+      setQuitMessage(event, null);
     }
     this.plugin.chestFakeClose(event.getPlayer().getName());
     this.playersAndLastTimeSneaked.remove(player.getUniqueId());
@@ -241,6 +243,15 @@ public final class ListenPlayerOther implements Listener {
         player.setGameMode(GameMode.SPECTATOR);
       }
       this.playersAndLastTimeSneaked.remove(player.getUniqueId());
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  private void setQuitMessage(PlayerQuitEvent event, String message) {
+    if (SchedulerAdapter.isPaper()) {
+      event.quitMessage(message != null ? Component.text(message) : null);
+    } else {
+      event.setQuitMessage(message);
     }
   }
 }

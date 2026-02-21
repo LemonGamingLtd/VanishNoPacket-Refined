@@ -17,12 +17,12 @@
  */
 package org.kitteh.vanish.listeners;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.kitteh.vanish.Settings;
@@ -37,9 +37,9 @@ public final class ListenPlayerMessages implements Listener {
     this.plugin = instance;
   }
 
-  @SuppressWarnings("unused")
+  @SuppressWarnings({"unused", "deprecation"})
   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onPlayerChat(@NonNull AsyncChatEvent event) {
+  public void onPlayerChat(@NonNull AsyncPlayerChatEvent event) {
     if (this.plugin.getManager().isVanished(event.getPlayer()) && VanishPerms.canNotChat(
         event.getPlayer())) {
       event.setCancelled(true);

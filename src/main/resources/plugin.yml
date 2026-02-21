@@ -1,0 +1,27 @@
+name: VanishNoPacket
+version: '3.22-SNAPSHOT'
+main: org.kitteh.vanish.VanishPlugin
+api-version: "1.20"
+description: Vanish for the high speed admin
+authors:
+  - Matt "MBax" Baxter
+  - Lexie "Tech" Malina
+softdepend:
+  - Essentials
+  - PlaceholderAPI
+  - Vault
+  - squaremap
+  - LuckPerms
+commands:
+  vanish:
+    description: Toggle vanish mode
+    usage: /<command> [on|off|reload|list|fakequit|fakejoin|soft|admin|toggle]
+    aliases: [v, vnp]
+  softvanish:
+    description: Toggle soft vanish mode
+    usage: /<command>
+    aliases: [sv]
+  adminvanish:
+    description: Toggle admin vanish mode
+    usage: /<command>
+    aliases: [av]

@@ -89,7 +89,7 @@ public final class VanishAnnounceManipulator {
     return true;
   }
 
-  void fakeJoin(@NonNull Player player, boolean force) {
+  public void fakeJoin(@NonNull Player player, boolean force) {
     if (force || !(this.playerOnlineStatus.containsKey(player.getName())
         && this.playerOnlineStatus.get(player.getName()))) {
       this.plugin.getServer().broadcast(Component.translatable("multiplayer.player.joined")
@@ -100,7 +100,7 @@ public final class VanishAnnounceManipulator {
     }
   }
 
-  void fakeQuit(@NonNull Player player, boolean force) {
+  public void fakeQuit(@NonNull Player player, boolean force) {
     if (force || !(this.playerOnlineStatus.containsKey(player.getName())
         && !this.playerOnlineStatus.get(player.getName()))) {
       this.plugin.getServer().broadcast(Component.translatable("multiplayer.player.left")

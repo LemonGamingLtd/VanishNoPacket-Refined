@@ -113,8 +113,7 @@ public final class VanishManager {
 
     this.showPlayer = new ShowPlayerHandler(this.plugin, this);
 
-    this.plugin.getServer().getGlobalRegionScheduler()
-        .runAtFixedRate(this.plugin, (ignored) -> this.showPlayer.run(), 4, 4);
+    this.plugin.getScheduler().runAtFixedRate(this.plugin, this.showPlayer::run, 4, 4);
     this.vanishCollideState = new NamespacedKey(this.plugin, "collidable");
 
     this.plugin.getServer().getMessenger()
@@ -267,7 +266,7 @@ public final class VanishManager {
       this.announceManipulator.vanishToggled(togglingPlayer);
     }
     final Component message = base.append(messageBit);
-    togglingPlayer.sendMessage(
+    this.plugin.sendMessage(togglingPlayer,
         Component.text("You have ", NamedTextColor.DARK_AQUA).append(messageBit));
     this.plugin.messageStatusUpdate(message, togglingPlayer);
   }
@@ -419,7 +418,7 @@ public final class VanishManager {
     for (Object b : batty.toArray()) {
     }
 
-    this.plugin.getServer().getRegionScheduler().runDelayed(this.plugin, location, (j) -> {
+    this.plugin.getScheduler().runDelayedAt(this.plugin, location, () -> {
       VanishManager.this.effectBatsCleanup(location.getWorld(), batty);
       VanishManager.this.bats.removeAll(batty);
     }, 3 * 20);
@@ -533,7 +532,7 @@ public final class VanishManager {
         }
       }
 
-      this.plugin.getServer().getGlobalRegionScheduler().runDelayed(this.plugin, task -> {
+      this.plugin.getScheduler().runDelayed(this.plugin, () -> {
         if (player.isOnline() && this.adminVanishedPlayerNames.contains(player.getName())) {
           for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
             if (!player.equals(otherPlayer)) {

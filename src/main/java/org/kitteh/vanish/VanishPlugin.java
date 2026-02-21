@@ -25,6 +25,7 @@ import java.util.Set;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -49,6 +50,8 @@ import org.kitteh.vanish.listeners.ListenPlayerMessages;
 import org.kitteh.vanish.listeners.ListenPlayerOther;
 import org.kitteh.vanish.listeners.ListenServerPing;
 import org.kitteh.vanish.listeners.ListenHangingBreak;
+import org.kitteh.vanish.compat.SchedulerAdapter;
+import org.kitteh.vanish.compat.VanishCommandBukkit;
 
 public final class VanishPlugin extends JavaPlugin implements Listener {
 
@@ -56,6 +59,7 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
   private final HookManager hookManager = new HookManager(this);
   private VanishManager manager;
   private boolean paper;
+  private SchedulerAdapter scheduler;
 
   /**
    * Informs VNP that a user has closed their fake chest
@@ -97,7 +101,7 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
    * @return version of VanishNoPacket in use
    */
   public @NonNull String getCurrentVersion() {
-    return this.getPluginMeta().getVersion();
+    return this.getDescription().getVersion();
   }
 
   /**
@@ -192,8 +196,16 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
   public void messageStatusUpdate(@NonNull ComponentLike message, @Nullable Player avoid) {
     for (final Player player : this.getServer().getOnlinePlayers()) {
       if (!player.equals(avoid) && VanishPerms.canSeeStatusUpdates(player)) {
-        player.sendMessage(message);
+        sendMessage(player, message.asComponent());
       }
+    }
+  }
+
+  public void sendMessage(@NonNull Player player, @NonNull Component component) {
+    if (this.paper) {
+      player.sendMessage(component);
+    } else {
+      player.sendMessage(LegacyComponentSerializer.legacySection().serialize(component));
     }
   }
 
@@ -214,8 +226,15 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
 
   @Override
   public void onEnable() {
-    this.paper = true;
-    this.getServer().getPluginManager().registerEvents(new ListenPaper(this), this);
+    this.paper = SchedulerAdapter.isPaper();
+    this.scheduler = SchedulerAdapter.create(this);
+
+    if (this.paper) {
+      this.getServer().getPluginManager().registerEvents(new ListenPaper(this), this);
+      this.getLogger().info("Paper detected - enabling Paper-specific features");
+    } else {
+      this.getLogger().info("Running on Spigot/Bukkit - Paper-specific features disabled");
+    }
 
     final File check = new File(this.getDataFolder(), "config.yml");
     if (!check.exists()) {
@@ -254,7 +273,11 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
           new AdminVanishCheck(this.manager, player.getName())));
     }
 
-    new VanishCommand(this);
+    if (this.paper) {
+      new VanishCommand(this);
+    } else {
+      new VanishCommandBukkit(this);
+    }
     this.getServer().getPluginManager().registerEvents(this, this);
     this.getServer().getPluginManager().registerEvents(new ListenEntity(this), this);
     this.getServer().getPluginManager().registerEvents(new ListenPlayerMessages(this), this);
@@ -264,7 +287,7 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
     this.getServer().getPluginManager().registerEvents(new ListenInventory(this), this);
     this.getServer().getPluginManager().registerEvents(new ListenServerPing(this.manager), this);
 
-    this.getServer().getGlobalRegionScheduler().runDelayed(this, task -> forceOverrideCommandAliases(), 1L);
+    this.scheduler.runDelayed(this, this::forceOverrideCommandAliases, 1L);
 
     this.getLogger().info(this.getCurrentVersion() + " loaded.");
   }
@@ -337,5 +360,14 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
    */
   public boolean isPaper() {
     return this.paper;
+  }
+
+  /**
+   * Gets the scheduler adapter for cross-platform scheduling.
+   *
+   * @return the scheduler adapter
+   */
+  public @NonNull SchedulerAdapter getScheduler() {
+    return this.scheduler;
   }
 }

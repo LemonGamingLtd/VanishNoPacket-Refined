@@ -19,7 +19,9 @@ package org.kitteh.vanish.listeners;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,6 +33,7 @@ import org.kitteh.vanish.AdminVanishCheck;
 import org.kitteh.vanish.VanishCheck;
 import org.kitteh.vanish.VanishPerms;
 import org.kitteh.vanish.VanishPlugin;
+import org.kitteh.vanish.compat.SchedulerAdapter;
 
 public final class ListenPlayerJoin implements Listener {
 
@@ -63,10 +66,10 @@ public final class ListenPlayerJoin implements Listener {
   @EventHandler(priority = EventPriority.MONITOR)
   public void onPlayerJoinLate(@NonNull PlayerJoinEvent event) {
     if (VanishPerms.joinAdminVanished(event.getPlayer())) {
-      event.getPlayer().sendMessage(Component.text("You have joined in admin vanish mode.", NamedTextColor.DARK_RED));
+      sendMessage(event.getPlayer(), Component.text("You have joined in admin vanish mode.", NamedTextColor.DARK_RED));
       this.plugin.getManager().getAnnounceManipulator()
           .addToDelayedAnnounce(event.getPlayer().getName());
-      event.joinMessage(null);
+      setJoinMessage(event, null);
       return;
     }
 
@@ -76,13 +79,13 @@ public final class ListenPlayerJoin implements Listener {
       if (VanishPerms.canVanish(event.getPlayer())) {
         message = message.append(Component.text(" To appear: /vanish",  NamedTextColor.DARK_AQUA));
       }
-      event.getPlayer().sendMessage(message);
+      sendMessage(event.getPlayer(), message);
       statusUpdate.append("vanished");
     }
     if (VanishPerms.joinWithoutAnnounce(event.getPlayer())) {
       this.plugin.getManager().getAnnounceManipulator()
           .addToDelayedAnnounce(event.getPlayer().getName());
-      event.joinMessage(null);
+      setJoinMessage(event, null);
 
       if (!statusUpdate.isEmpty()) {
         statusUpdate.append(" and ");
@@ -91,8 +94,24 @@ public final class ListenPlayerJoin implements Listener {
     }
     if (!statusUpdate.isEmpty()) {
       this.plugin.messageStatusUpdate(
-
          Component.text(event.getPlayer().getName() + " has joined " + statusUpdate,  NamedTextColor.DARK_AQUA));
+    }
+  }
+
+  private void sendMessage(Player player, Component component) {
+    if (SchedulerAdapter.isPaper()) {
+      player.sendMessage(component);
+    } else {
+      player.sendMessage(LegacyComponentSerializer.legacySection().serialize(component));
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  private void setJoinMessage(PlayerJoinEvent event, String message) {
+    if (SchedulerAdapter.isPaper()) {
+      event.joinMessage(message != null ? Component.text(message) : null);
+    } else {
+      event.setJoinMessage(message);
     }
   }
 }
