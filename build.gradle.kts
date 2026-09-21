@@ -28,6 +28,7 @@ repositories {
     maven("https://nexus.scarsz.me/content/groups/public/")
     maven("https://repo.maven.apache.org/maven2/")
     maven("https://jitpack.io")
+    maven("https://maven.maxhenkel.de/repository/public")
 }
 
 dependencies {
@@ -57,6 +58,7 @@ dependencies {
         exclude("net.kyori")
     }
     compileOnly("xyz.jpenilla:squaremap-api:1.3.7")
+    compileOnly("de.maxhenkel.voicechat:voicechat-api:2.6.0")
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_21
@@ -154,5 +156,6 @@ paperPluginYaml {
         server("Vault", PaperPluginYaml.Load.OMIT, false)
         server("squaremap", PaperPluginYaml.Load.OMIT, false)
         server("LuckPerms", PaperPluginYaml.Load.OMIT, false)
+        server("voicechat", PaperPluginYaml.Load.BEFORE, false)
     }
 }

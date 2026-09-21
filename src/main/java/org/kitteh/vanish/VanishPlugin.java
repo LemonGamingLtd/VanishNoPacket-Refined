@@ -263,6 +263,14 @@ public final class VanishPlugin extends JavaPlugin implements Listener {
     if (this.getConfig().getBoolean("hooks.luckperms", false)) {
       this.hookManager.getHook(HookType.LuckPerms).onEnable();
     }
+    if (this.getConfig().getBoolean("hooks.voicechat", true)) {
+      if (this.getServer().getPluginManager().isPluginEnabled("voicechat")) {
+        this.hookManager.getHook(HookType.VoiceChat).onEnable();
+      } else {
+        this.getLogger()
+            .info("Can't find Simple Voice Chat!");
+      }
+    }
 
     this.manager = new VanishManager(this);
 

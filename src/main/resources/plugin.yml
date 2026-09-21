@@ -12,6 +12,7 @@ softdepend:
   - Vault
   - squaremap
   - LuckPerms
+  - voicechat
 commands:
   vanish:
     description: Toggle vanish mode

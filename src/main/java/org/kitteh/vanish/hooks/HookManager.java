@@ -27,6 +27,7 @@ import org.kitteh.vanish.hooks.plugins.EssentialsHook;
 import org.kitteh.vanish.hooks.plugins.LuckPermsHook;
 import org.kitteh.vanish.hooks.plugins.SquaremapHook;
 import org.kitteh.vanish.hooks.plugins.VaultHook;
+import org.kitteh.vanish.hooks.plugins.VoiceChatHook;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +40,8 @@ public final class HookManager {
         Vault(VaultHook.class),
         DiscordSRV(DiscordSRVHook.class),
         Squaremap(SquaremapHook.class),
-        LuckPerms(LuckPermsHook.class);
+        LuckPerms(LuckPermsHook.class),
+        VoiceChat(VoiceChatHook.class);
 
         private final Class<? extends Hook> clazz;
 

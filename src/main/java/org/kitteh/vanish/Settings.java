@@ -32,7 +32,7 @@ public final class Settings {
   private static int doubleSneakDuringVanishSwitchesGameModeTimeBetweenSneaksInMS = 500;
   private static String doubleSneakDuringVanishSwitchesGameModeMessage = "&aGameMode changed!";
 
-  private static final int confVersion = 10; // Tracking config version
+  private static final int confVersion = 11; // Tracking config version
 
   public static boolean getAutoFakeJoinSilent() {
     return Settings.autoFakeJoinSilent;
@@ -107,6 +107,8 @@ public final class Settings {
         case 9:
           config.set("hooks.luckperms", false);
           config.set("hooks.dynmap", null);
+        case 10:
+          config.set("hooks.voicechat", false);
           break;
         default:
           plugin.getLogger().severe(

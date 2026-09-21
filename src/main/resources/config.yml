@@ -14,6 +14,7 @@ hooks:
     discordsrv: false
     squaremap: false
     luckperms: false
+    voicechat: false
 
 permissionsupdates:
     checkonworldchange: false
@@ -30,4 +31,4 @@ double-sneak-during-vanish-switches-gamemode:
     message: '&aGameMode changed!'
 
 configVersionDoNotTouch:
-    SeriouslyThisWillEraseYourConfig: 10
+    SeriouslyThisWillEraseYourConfig: 11
